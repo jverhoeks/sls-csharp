@@ -64,13 +64,44 @@ provider:
 #    - exclude-me.js
 #    - exclude-me-dir/**
 
+# functions:
+#   hello:
+#     handler: CsharpHandlers::AwsDotnetCsharp.Handler::Hello
+#     events:
+#      - http:
+#          path: hello
+#          method: get
+#
+
 functions:
-  hello:
-    handler: CsharpHandlers::AwsDotnetCsharp.Handler::Hello
+  create:
+    handler: CsharpHandlers::AwsDotnetCsharp.Handler::Create
     events:
-     - http:
-         path: hello
-         method: get
+      - http:
+          path: products
+          method: post
+          cors: true
+  list:
+    handler:  CsharpHandlers::AwsDotnetCsharp.Handler::List
+    events:
+      - http:
+          path: products
+          method: get
+          cors: true
+  view:
+    handler:  CsharpHandlers::AwsDotnetCsharp.Handler::View
+    events:
+      - http:
+          path: products/{id}
+          method: get
+          cors: true
+  remove:
+    handler:  CsharpHandlers::AwsDotnetCsharp.Handler::Remove
+    events:
+      - http:
+          path: products/{id}
+          method: delete
+          cors: true
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
