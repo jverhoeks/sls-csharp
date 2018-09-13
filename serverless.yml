@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: csharp # NOTE: update this with your service name
+service: blog # NOTE: update this with your service name
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -22,7 +22,7 @@ provider:
   runtime: dotnetcore2.1
   region: eu-west-1
   environment:
-    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    BlogTable: ${self:service}-${opt:stage, self:provider.stage}
   iamRoleStatements:
       - Effect: Allow
         Action:
@@ -32,7 +32,7 @@ provider:
           - dynamodb:PutItem
           - dynamodb:UpdateItem
           - dynamodb:DeleteItem
-        Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+        Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.BlogTable}"
 # you can overwrite defaults here
 #  stage: dev
 #  region: us-east-1
@@ -74,34 +74,35 @@ provider:
 #
 
 functions:
-  create:
-    handler: CsharpHandlers::AwsDotnetCsharp.Handler::Create
+  GetBlogs:
+    handler: BlueprintBaseName.1::BlueprintBaseName._1.Functions::GetBlogsAsync"
     events:
       - http:
-          path: products
-          method: post
-          cors: true
-  list:
-    handler:  CsharpHandlers::AwsDotnetCsharp.Handler::List
-    events:
-      - http:
-          path: products
+          path: /
           method: get
           cors: true
-  view:
-    handler:  CsharpHandlers::AwsDotnetCsharp.Handler::View
+  GetBlog:
+    handler: BlueprintBaseName.1::BlueprintBaseName._1.Functions::GetBlogAsync"
     events:
       - http:
-          path: products/{id}
+          path: /{Id}
           method: get
           cors: true
-  remove:
-    handler:  CsharpHandlers::AwsDotnetCsharp.Handler::Remove
+  AddBlog:
+    handler: BlueprintBaseName.1::BlueprintBaseName._1.Functions::AddBlogAsync"
     events:
       - http:
-          path: products/{id}
+          path: /
+          method: put
+          cors: true
+  RemoveBlog:
+    handler: BlueprintBaseName.1::BlueprintBaseName._1.Functions::RemoveBlogAsync"
+    events:
+      - http:
+          path: /{Id}
           method: delete
           cors: true
+
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
@@ -138,7 +139,7 @@ resources:
     ProductsDynamoDbTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:provider.environment.DYNAMODB_TABLE}
+        TableName: ${self:provider.environment.BlogTable}
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
